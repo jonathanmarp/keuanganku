@@ -1,0 +1,7 @@
+{
+  "name": ".\\\\keuanganku",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react"
+}
