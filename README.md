@@ -14,5 +14,6 @@ dan berbagai data keuangan. Dan ini git ini digunakan untuk server yang berbasis
   - MySQL
 - Branch: **Development-application-v1**.
   - Nodejs
+  - NPM
   - ReactJS
   - Ionic
