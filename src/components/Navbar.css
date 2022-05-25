@@ -1,0 +1,7 @@
+.button\-menu {
+    @apply text-gray-300 w-[100%] flex;
+}
+
+.button\-menu:hover {
+    @apply text-gray-50 border-b;
+}

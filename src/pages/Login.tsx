@@ -18,7 +18,7 @@ import {
 } from 'ionicons/icons';
 
 // Components Pages
-import Navbar from '../components/navbar';
+import Navbar from '../components/Navbar';
 
 // Styles
 import './Login.css';

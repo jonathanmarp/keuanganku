@@ -16,7 +16,7 @@ import {
   mailOutline,
   personAddSharp
 } from 'ionicons/icons';
-import Navbar from '../components/navbar';
+import Navbar from '../components/Navbar';
 
 // Styles
 import './Login.css';
