@@ -4,6 +4,9 @@ import App from './App';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import reportWebVitals from './reportWebVitals';
 
+// Import style
+import './index.css';
+
 ReactDOM.render(
   <React.StrictMode>
     <App />

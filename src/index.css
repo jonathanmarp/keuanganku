@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Fonts Section */
+@font-face {
+    font-family: Nunito;
+    src: url(../public/assets/fonts/Nunito.ttf);
+}
+
+@font-face {
+    font-family: Rubik;
+    src: url(../public/assets/fonts/Rubik.ttf);
+}
+
+/* Settings Global */
+* {
+    font-family: Nunito;
+}
+
+ion-item {
+    --ion-item-background: transparent;
+}
