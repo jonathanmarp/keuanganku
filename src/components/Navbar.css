@@ -1,5 +1,5 @@
 .button\-menu {
-    @apply text-gray-300 w-[100%] flex;
+    @apply text-gray-300 w-[100%] flex items-center;
 }
 
 .button\-menu:hover {

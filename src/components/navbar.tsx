@@ -19,7 +19,10 @@ import {
     albumsOutline,
     cardOutline,
     peopleOutline,
-    logOutOutline
+    logOutOutline,
+    settingsOutline,
+    listOutline,
+    globeOutline
 } from 'ionicons/icons';
 
 // Styles
@@ -49,7 +52,13 @@ function Navbar(props: any) {
 
                         {/* List */}
                         <div className='mt-2'>
-                            {/* Keluar */}
+                            {/* Settings */}
+                            <button className="button-menu p-2">
+                                <IonIcon icon={settingsOutline} />
+                                <h1 className="font-semibold px-2">Pengaturan</h1>
+                            </button>
+                            
+                            {/* Sign Out */}
                             <button className="button-menu p-2">
                                 <IonIcon icon={logOutOutline} />
                                 <h1 className="font-semibold px-2">Keluar</h1>
@@ -57,12 +66,12 @@ function Navbar(props: any) {
                         </div>
                     </div>
 
-                    {/* Add */}
+                    {/* Keuangan */}
                     <div className="px-5 mt-6">
                         {/* Title */}
                         <div className="flex items-center text-lg border-b">
                             <IonIcon icon={walletOutline} />
-                            <h1 className="font-semibold px-2">Tambah Keugangan</h1>
+                            <h1 className="font-semibold px-2">Keuangan</h1>
                         </div>
 
                         {/* List */}
@@ -83,6 +92,24 @@ function Navbar(props: any) {
                             <button className="button-menu p-2">
                                 <IonIcon icon={cardOutline} />
                                 <h1 className="font-semibold px-2">Tambah Utang</h1>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    {/* More */}
+                    <div className="px-5 mt-6">
+                        {/* Title */}
+                        <div className="flex items-center text-lg border-b">
+                            <IonIcon icon={listOutline} />
+                            <h1 className="font-semibold px-2">Yang Lain</h1>
+                        </div>
+
+                        {/* List */}
+                        <div className='mt-2'>
+                            {/* Pemasukan */}
+                            <button className="button-menu p-2">
+                                <IonIcon icon={globeOutline} />
+                                <h1 className="font-semibold px-2">History</h1>
                             </button>
                         </div>
                     </div>
