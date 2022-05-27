@@ -31,6 +31,14 @@ import './theme/variables.css';
 
 setupIonicReact();
 
+// Make interface
+interface TypeReturn {
+  code: number,
+  response: boolean,
+  description: string,
+  data: any
+}
+
 class App extends React.Component<{}, { hasLogin: boolean, server: string }> {
   constructor(props: any) {
     super(props);
@@ -38,39 +46,81 @@ class App extends React.Component<{}, { hasLogin: boolean, server: string }> {
     // State
     this.state = {
       hasLogin: false,
-      server: "http://keuangankubackend.000webhostapp.com/api/"
+      server: "https://keuangankubackend.000webhostapp.com/api/"
     };
   
     // Binding function login
     this.Login = this.Login.bind(this);
+  
+    // Binding set has login
+    this.setHasLogin = this.setHasLogin.bind(this);
+
+    // Binding get access main
+    this.getAccessMain = this.getAccessMain.bind(this);
   }
 
-  componentDidMount() {
+  setHasLogin(): void {
+    // Set state
     this.setState({
       hasLogin: localStorage.getItem("hasLogin") === "true" ? true : false
-    })
+    });
   }
 
-  Login(email: string, username: string, password: string) {
+  componentDidMount(): void {
+    // Call set has login
+    this.setHasLogin();
+  }
+
+  async Login(email: string, 
+              username: string, 
+              password: string) {
     // Setup response
     let response = {
       code: 200,
       description: ""
     };
+    
+    // fetch
+    try {
+      fetch(`${this.state.server}user/login/${email}/${username}/${password}`)
+        .then(data => data.json())
+        .then((data: TypeReturn) => {
+          // Get element
+          const element: HTMLElement = document.getElementById("alert_error_login")!;
+          
+          // If status not error
+          if(data.code === 400) {
+            // Show error alert
+            element.style.display = "block";
+          } else {
+            // Hidden error alert
+            element.style.display = "none";
 
-    // setup url
-    const urlTarget = `${this.state.server}user/login/${email}/${username}/${password}/`;
+            // If succes
+            localStorage.setItem("hasLogin", "true"); // Set to true
+            localStorage.setItem("email", data.data.email); // Set email
+            localStorage.setItem("username", data.data.username); // Set username
+            localStorage.setItem("key_user", String(data.data.key)); // Set key
+            localStorage.setItem("create", data.data.create); // Set create
 
-    // Fetch
-    const headers: Headers = new Headers();
-    headers.set("Access-Control-Allow-Origin", "*");
-
-    fetch(urlTarget, {headers: headers}).then(data => data.json()).then(data => {
-      console.log(data);
-    });
+            // Call set has login
+            this.setHasLogin();
+          }
+        });
+    } catch(err) {
+      console.log(err);
+    }
 
     // return response
     return response;
+  }
+
+  getAccessMain(): boolean {
+    return (this.state.hasLogin 
+            && localStorage.getItem("email")    != null 
+            && localStorage.getItem("username") != null
+            && localStorage.getItem("key_user") != null
+            && localStorage.getItem("create")   != null);
   }
 
   render(): any {
@@ -80,17 +130,17 @@ class App extends React.Component<{}, { hasLogin: boolean, server: string }> {
           <IonRouterOutlet>
             {/* Login */}
             <Route exact path="/login" render={() => {
-              return this.state.hasLogin ? <Main /> : <Login Login={this.Login} />;
+              return this.getAccessMain() ? <Main /> : <Login Login={this.Login} />;
             }}></Route>
             
             {/* Register */}
             <Route exact path="/register" render={() => {
-              return this.state.hasLogin ? <Main /> : <Register />;
+              return this.getAccessMain() ? <Main /> : <Register />;
             }}></Route>
             
             {/* Main */}
             <Route exact path="/main" render={() => {
-              return this.state.hasLogin ? <Main /> : <Login Login={this.Login} />;
+              return this.getAccessMain() ? <Main /> : <Login Login={this.Login} />;
             }}></Route>
 
             <Route exact path="/">

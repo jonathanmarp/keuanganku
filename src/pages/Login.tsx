@@ -54,6 +54,17 @@ const Login: React.FC<any> = (props: any) => {
           <div className="px-6 py-2 w-full md:w-1/2 h-[80%]">
             <h1 className="text-2xl font-semibold py-4">Login</h1>
 
+            {/* Alert */}
+            <div className="hidden" id="alert_error_login">
+              <div className="flex items-center pb-2">
+                <IonBadge color="danger">
+                  <IonIcon icon={alertOutline}></IonIcon>
+                </IonBadge>
+
+                <p className="ml-2">Email, Username, Atau Password. Pasti ada yang salah</p>
+              </div>
+            </div>
+
             <IonList className="rounded-lg">
               {/* Email */}
               <IonItem>
