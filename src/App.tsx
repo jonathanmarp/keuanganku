@@ -62,7 +62,10 @@ class App extends React.Component<{}, { hasLogin: boolean, server: string }> {
     const urlTarget = `${this.state.server}user/login/${email}/${username}/${password}/`;
 
     // Fetch
-    fetch(urlTarget).then(data => data.json()).then(data => {
+    const headers: Headers = new Headers();
+    headers.set("Access-Control-Allow-Origin", "*");
+
+    fetch(urlTarget, {headers: headers}).then(data => data.json()).then(data => {
       console.log(data);
     });
 
