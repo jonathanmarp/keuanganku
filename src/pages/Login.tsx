@@ -7,7 +7,8 @@ import {
   IonList,
   IonIcon,
   IonButton,
-  IonBadge
+  IonBadge,
+  IonProgressBar
 } from '@ionic/react';
 
 // Icons
@@ -19,16 +20,10 @@ import {
   alertOutline
 } from 'ionicons/icons';
 
-// Components Pages
-import Navbar from '../components/Navbar';
-
 // Import React
 import { useState } from 'react';
 
-// Styles
-import './Login.css';
-
-const Login: React.FC<any> = (props: any) => {
+const Login: React.FC<{Login: Function}> = (props: any) => {
   // setup for input
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
@@ -45,14 +40,17 @@ const Login: React.FC<any> = (props: any) => {
   // return the result
   return (
     <IonPage>
-      {/* Navbar */}
-      <Navbar />
-
       {/* Content */}
       <IonContent fullscreen>
         <div className="flex items-center justify-center h-full w-full">
           <div className="px-6 py-2 w-full md:w-1/2 h-[80%]">
             <h1 className="text-2xl font-semibold py-4">Login</h1>
+            {/* Progeress */}
+            <IonProgressBar 
+              type="indeterminate" 
+              color="dark"
+              id="progess_form"
+              className="hidden"></IonProgressBar>
 
             {/* Alert */}
             <div className="hidden" id="alert_error_login">
@@ -195,9 +193,27 @@ const Login: React.FC<any> = (props: any) => {
               <IonButton color="light" expand="block" className="w-1/2" onClick={() => {
                 // Check is safety
                 if(emailAccess && usernameAccess && passwordAccess) {
-                  if(props.Login(email, username, password)) {
-                    
-                  }
+                  // Get element
+                  const element: HTMLElement = document.getElementById("progess_form")!;
+
+                  // Show element
+                  element.style.display = "block";
+
+                  // Get data
+                  const email_t = email;
+                  const username_t = username;
+                  const password_t = password;
+
+                  // Set add data into empty
+                  setEmail("");
+                  setEmailAccess(false);
+                  setUsername("");
+                  setUsernameAccess(false);
+                  setPassword("");
+                  setPasswordAccess(false);
+
+                  // Login
+                  props.Login(email_t, username_t, password_t);
                 }
               }}>
                 Login

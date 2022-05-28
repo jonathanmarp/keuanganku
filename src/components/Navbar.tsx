@@ -28,94 +28,102 @@ import {
 // Styles
 import "./Navbar.css"
 
-function Navbar(props: any) {
+function Navbar(props: { GetAccessMain: Function, LogOut: Function }) {
     return (
         <>
-            {/* Menu */}
-            <IonMenu side="start" menuId="main-menu" contentId="main">
-                {/* Header */}
-                <IonHeader className="ion-no-border">
-                    <IonToolbar color="dark">
-                        <IonTitle>Menu</IonTitle>
-                    </IonToolbar>
-                </IonHeader>
+            {
+                (props.GetAccessMain() === true) ? (
+                    <>
+                        {/* Menu */}
+                        <IonMenu side="start" menuId="main-menu" contentId="main">
+                            {/* Header */}
+                            <IonHeader className="ion-no-border">
+                                <IonToolbar color="dark">
+                                    <IonTitle>Menu</IonTitle>
+                                </IonToolbar>
+                            </IonHeader>
 
-                {/* Content */}
-                <IonContent className="ion-no-border">
-                    {/* Add */}
-                    <div className="px-5 mt-6">
-                        {/* Title */}
-                        <div className="flex items-center text-lg border-b">
-                            <IonIcon icon={peopleOutline} />
-                            <h1 className="font-semibold px-2">User</h1>
-                        </div>
+                            {/* Content */}
+                            <IonContent className="ion-no-border">
+                                {/* Add */}
+                                <div className="px-5 mt-6">
+                                    {/* Title */}
+                                    <div className="flex items-center text-lg border-b">
+                                        <IonIcon icon={peopleOutline} />
+                                        <h1 className="font-semibold px-2">User</h1>
+                                    </div>
 
-                        {/* List */}
-                        <div className='mt-2'>
-                            {/* Settings */}
-                            <button className="button-menu p-2">
-                                <IonIcon icon={settingsOutline} />
-                                <h1 className="font-semibold px-2">Pengaturan</h1>
-                            </button>
-                            
-                            {/* Sign Out */}
-                            <button className="button-menu p-2">
-                                <IonIcon icon={logOutOutline} />
-                                <h1 className="font-semibold px-2">Keluar</h1>
-                            </button>
-                        </div>
-                    </div>
+                                    {/* List */}
+                                    <div className='mt-2'>
+                                        {/* Settings */}
+                                        <button className="button-menu p-2">
+                                            <IonIcon icon={settingsOutline} />
+                                            <h1 className="font-semibold px-2">Pengaturan</h1>
+                                        </button>
+                                        
+                                        {/* Sign Out */}
+                                        <button 
+                                            className="button-menu p-2"
+                                            onClick={() => props.LogOut()}>
+                                            <IonIcon icon={logOutOutline} />
+                                            <h1 className="font-semibold px-2">Keluar</h1>
+                                        </button>
+                                    </div>
+                                </div>
 
-                    {/* Keuangan */}
-                    <div className="px-5 mt-6">
-                        {/* Title */}
-                        <div className="flex items-center text-lg border-b">
-                            <IonIcon icon={walletOutline} />
-                            <h1 className="font-semibold px-2">Keuangan</h1>
-                        </div>
+                                {/* Keuangan */}
+                                <div className="px-5 mt-6">
+                                    {/* Title */}
+                                    <div className="flex items-center text-lg border-b">
+                                        <IonIcon icon={walletOutline} />
+                                        <h1 className="font-semibold px-2">Keuangan</h1>
+                                    </div>
 
-                        {/* List */}
-                        <div className='mt-2'>
-                            {/* Pemasukan */}
-                            <button className="button-menu p-2">
-                                <IonIcon icon={cashOutline} />
-                                <h1 className="font-semibold px-2">Tambah Pemasukan</h1>
-                            </button>
+                                    {/* List */}
+                                    <div className='mt-2'>
+                                        {/* Pemasukan */}
+                                        <button className="button-menu p-2">
+                                            <IonIcon icon={cashOutline} />
+                                            <h1 className="font-semibold px-2">Tambah Pemasukan</h1>
+                                        </button>
 
-                            {/* Pengeluaran */}
-                            <button className="button-menu p-2">
-                                <IonIcon icon={albumsOutline} />
-                                <h1 className="font-semibold px-2">Tambah Pengeluaran</h1>
-                            </button>
+                                        {/* Pengeluaran */}
+                                        <button className="button-menu p-2">
+                                            <IonIcon icon={albumsOutline} />
+                                            <h1 className="font-semibold px-2">Tambah Pengeluaran</h1>
+                                        </button>
 
-                            {/* Utang */}
-                            <button className="button-menu p-2">
-                                <IonIcon icon={cardOutline} />
-                                <h1 className="font-semibold px-2">Tambah Utang</h1>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    {/* More */}
-                    <div className="px-5 mt-6">
-                        {/* Title */}
-                        <div className="flex items-center text-lg border-b">
-                            <IonIcon icon={listOutline} />
-                            <h1 className="font-semibold px-2">Yang Lain</h1>
-                        </div>
+                                        {/* Utang */}
+                                        <button className="button-menu p-2">
+                                            <IonIcon icon={cardOutline} />
+                                            <h1 className="font-semibold px-2">Tambah Utang</h1>
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                {/* More */}
+                                <div className="px-5 mt-6">
+                                    {/* Title */}
+                                    <div className="flex items-center text-lg border-b">
+                                        <IonIcon icon={listOutline} />
+                                        <h1 className="font-semibold px-2">Yang Lain</h1>
+                                    </div>
 
-                        {/* List */}
-                        <div className='mt-2'>
-                            {/* Pemasukan */}
-                            <button className="button-menu p-2">
-                                <IonIcon icon={globeOutline} />
-                                <h1 className="font-semibold px-2">History</h1>
-                            </button>
-                        </div>
-                    </div>
-                </IonContent>
-            </IonMenu>
-            <IonRouterOutlet id="main"></IonRouterOutlet>
+                                    {/* List */}
+                                    <div className='mt-2'>
+                                        {/* Pemasukan */}
+                                        <button className="button-menu p-2">
+                                            <IonIcon icon={globeOutline} />
+                                            <h1 className="font-semibold px-2">History</h1>
+                                        </button>
+                                    </div>
+                                </div>
+                            </IonContent>
+                        </IonMenu>
+                        <IonRouterOutlet id="main"></IonRouterOutlet>
+                    </>
+                ) : ""
+            }
         
             <IonHeader className="ion-no-border">
                 <IonToolbar color="white">
@@ -126,11 +134,15 @@ function Navbar(props: any) {
                         </div>
                     </IonTitle>
 
-                    <IonItem slot="end" className="p-2">
-                        <IonButton color="dark" className="w-10 h-10">
-                            <IonMenuButton menu="main-menu"></IonMenuButton>
-                        </IonButton>
-                    </IonItem>
+                    {
+                        (props.GetAccessMain() === true) ? (
+                            <IonItem slot="end" className="p-2">
+                                <IonButton color="dark" className="w-10 h-10">
+                                    <IonMenuButton menu="main-menu"></IonMenuButton>
+                                </IonButton>
+                            </IonItem>
+                        ) : ""
+                    }
                 </IonToolbar>
             </IonHeader>
         </>
