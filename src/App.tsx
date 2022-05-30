@@ -244,7 +244,7 @@ class App extends React.Component<{}, { hasLogin: boolean, server: string }> {
             
             {/* Main */}
             <Route exact path="/main" render={() => {
-              return this.getAccessMain() ? <Main /> : <Redirect to="/login" />;
+              return this.getAccessMain() ? <Main server={this.state.server} /> : <Redirect to="/login" />;
             }}></Route>
 
             <Route exact path="/">

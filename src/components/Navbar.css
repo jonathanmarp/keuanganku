@@ -1,7 +1,7 @@
 .button\-menu {
-    @apply text-gray-300 w-[100%] flex items-center;
+    @apply dark:text-gray-300 text-gray-500 w-[100%] flex items-center;
 }
 
 .button\-menu:hover {
-    @apply text-gray-50 border-b;
+    @apply dark:text-gray-50 text-gray-900 border-b;
 }
