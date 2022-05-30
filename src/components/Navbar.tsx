@@ -14,10 +14,6 @@ import {
 
 // Icons
 import {
-    walletOutline,
-    cashOutline,
-    albumsOutline,
-    cardOutline,
     peopleOutline,
     logOutOutline,
     settingsOutline,
@@ -70,36 +66,6 @@ function Navbar(props: { GetAccessMain: Function, LogOut: Function }) {
                                         </button>
                                     </div>
                                 </div>
-
-                                {/* Keuangan */}
-                                <div className="px-5 mt-6">
-                                    {/* Title */}
-                                    <div className="flex items-center text-lg border-b">
-                                        <IonIcon icon={walletOutline} />
-                                        <h1 className="font-semibold px-2">Keuangan</h1>
-                                    </div>
-
-                                    {/* List */}
-                                    <div className='mt-2'>
-                                        {/* Pemasukan */}
-                                        <button className="button-menu p-2">
-                                            <IonIcon icon={cashOutline} />
-                                            <h1 className="font-semibold px-2">Tambah Pemasukan</h1>
-                                        </button>
-
-                                        {/* Pengeluaran */}
-                                        <button className="button-menu p-2">
-                                            <IonIcon icon={albumsOutline} />
-                                            <h1 className="font-semibold px-2">Tambah Pengeluaran</h1>
-                                        </button>
-
-                                        {/* Utang */}
-                                        <button className="button-menu p-2">
-                                            <IonIcon icon={cardOutline} />
-                                            <h1 className="font-semibold px-2">Tambah Utang</h1>
-                                        </button>
-                                    </div>
-                                </div>
                                 
                                 {/* More */}
                                 <div className="px-5 mt-6">
@@ -136,7 +102,7 @@ function Navbar(props: { GetAccessMain: Function, LogOut: Function }) {
 
                     {
                         (props.GetAccessMain() === true) ? (
-                            <IonItem slot="end" className="p-2">
+                            <IonItem lines="none" slot="end" className="p-2">
                                 <IonButton color="dark" className="w-10 h-10">
                                     <IonMenuButton menu="main-menu"></IonMenuButton>
                                 </IonButton>

@@ -14,7 +14,18 @@ import {
     IonProgressBar,
     IonRefresher,
     IonRefresherContent,
-    IonContent
+    IonContent,
+    IonList,
+    IonItem,
+    IonLabel,
+    IonModal,
+    IonHeader,
+    IonTitle,
+    IonButton,
+    IonInput,
+    IonSelect,
+    IonSelectOption,
+    IonBadge,
 } from '@ionic/react';
 
 // Import core from ionic
@@ -23,10 +34,13 @@ import { RefresherEventDetail } from '@ionic/core';
 // Icons
 import {
     add, 
+    alertOutline, 
     arrowDownOutline, 
     arrowUpOutline, 
     cardOutline, 
-    peopleCircleOutline
+    cashOutline, 
+    closeOutline, 
+    peopleCircleOutline,
 } from 'ionicons/icons';
 
 // Import Style
@@ -42,27 +56,34 @@ import { Chart } from 'react-chartjs-2';
 
 ChartJS.register (...registerables);
 
+/** @interface */
 interface PropsMainData {
     id: Number,
-    type: String,
+    type: string,
     size: number
     create: Number,
     update: Number,
 }
 
+/** @interface */
 interface PropsMainDatas {
     data: Array<PropsMainData>
 }
 
+/** @interface */
 interface PropsMain { 
-    server: String,
+    server: string,
     datas_money: Array<PropsMainData>,
     datas_debt: Array<PropsMainData>,
+    formmatter: Intl.NumberFormat,
     income: number,
     expenditure: number,
     owe: number,
     owed: number,
-    total: number
+    total: number,
+    canModalOpen: boolean,
+    sizeInput: number,
+    typeInput: string
 }
 
 class Main extends React.Component<{ server: String}, PropsMain> {
@@ -73,17 +94,27 @@ class Main extends React.Component<{ server: String}, PropsMain> {
             server: props.server,
             datas_money: [],
             datas_debt: [],
+            formmatter: new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'IDR',
+            }),
             income: 0,
             expenditure: 0,
             owe: 0,
             owed: 0,
-            total: 0
+            total: 0,
+            canModalOpen: false,
+            sizeInput: 0,
+            typeInput: "income"
         };
 
         this.FetchMoney = this.FetchMoney.bind(this);
         this.getTotal = this.getTotal.bind(this);
         this.refreshPage = this.refreshPage.bind(this);
         this.refreshData = this.refreshData.bind(this);
+        this.makeChartTop = this.makeChartTop.bind(this);
+        this.makeList = this.makeList.bind(this);
+        this.cancelAdd = this.cancelAdd.bind(this);
     }
 
     // Fetch Data From Server
@@ -125,6 +156,12 @@ class Main extends React.Component<{ server: String}, PropsMain> {
 
     componentDidMount() {
         this.refreshData();
+
+        const InterVal: any = setInterval(() => {
+            try {
+                this.refreshData();
+            } catch(err) { clearInterval(InterVal); }
+        }, (60 * 1000));
     }
 
     refreshPage(event: CustomEvent<RefresherEventDetail>) {
@@ -134,8 +171,8 @@ class Main extends React.Component<{ server: String}, PropsMain> {
           }, 2000);
     }
 
-    componentDidUpdate(prevProps: any, prevState: PropsMain) {
-        if(prevState.datas_money !== this.state.datas_money) {
+    componentDidUpdate(prevProps: any, oldDatas: PropsMain) {
+        if(oldDatas.datas_money !== this.state.datas_money) {
             let income = 0;
             let exenditure = 0;
 
@@ -159,7 +196,7 @@ class Main extends React.Component<{ server: String}, PropsMain> {
             });
         }
 
-        if(prevState.datas_debt !== this.state.datas_debt) {
+        if(oldDatas.datas_debt !== this.state.datas_debt) {
             let owe = 0;
             let owed = 0;
 
@@ -189,21 +226,231 @@ class Main extends React.Component<{ server: String}, PropsMain> {
         return state.income + state.expenditure + state.owe + state.owed;
     }
 
-    render(): any {        
+    makeChartTop(props: {
+        data: number,
+        color: string,
+        title: string,
+        icon: string
+    }): any {
+        return (
+            <IonCard className="main_card_statistic">
+                <IonCardHeader>
+                    <IonCardSubtitle>{props.title}</IonCardSubtitle>
+                </IonCardHeader>
+                <IonCardContent className="flex items-center justify-between">
+                    <div className="flex items-center">
+                        <IonIcon icon={props.icon} />
+                        <p className="px-2 text-sm">{this.state.formmatter.format(props.data)}</p>
+                    </div>
+                    
+                    <div className="hidden md:block" style={{width: "40px", height: "40px"}}>
+                        <Chart type={"doughnut"} data={{
+                            labels: ["", ""],
+                            datasets: [
+                                {
+                                    label: "",
+                                    data: [props.data, this.getTotal()],
+                                    backgroundColor: [props.color, "#191A19"],
+                                }
+                            ]
+                        }} options={{
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    display: false
+                                }
+                            }
+                        }} />
+                    </div>
+                </IonCardContent>
+            </IonCard>
+        );
+    }
+
+    makeList(props: {
+        title: string,
+        data: number
+    }): any {
+        return (
+            <IonItem>
+                <IonLabel>{props.title}</IonLabel>
+                <p>{this.state.formmatter.format(props.data)}</p>
+            </IonItem>
+        );
+    }
+
+    cancelAdd(): void {
+        this.setState({
+            canModalOpen: false,
+            sizeInput: 0,
+            typeInput: "income"
+        });
+    }
+
+    render(): any {
         return (
             <IonPage className="p-2">
                 {/* Add Button */}
                 <IonFab vertical="bottom" horizontal="end" slot="fixed">
-                    <IonFabButton color="dark">
+                    <IonFabButton
+                        color="dark"
+                        onClick={() => this.setState({ canModalOpen: true })}>
                         <IonIcon icon={add} />
                     </IonFabButton>
                 </IonFab>
 
+                {/* Refresher */}
                 <IonContent className="absolute top-0">
                     <IonRefresher slot="fixed" onIonRefresh={this.refreshPage}>
                         <IonRefresherContent></IonRefresherContent>
                     </IonRefresher>
                 </IonContent>
+
+                {/* Modal */}
+                <IonModal 
+                    isOpen={this.state.canModalOpen}
+                    onDidDismiss={() => this.cancelAdd()}>
+                    {/* Progeress */}
+                    <IonProgressBar 
+                        type="indeterminate" 
+                        color="dark"
+                        id="progess_form"
+                        className="hidden"></IonProgressBar>
+                    
+                    {/* Header */}
+                    <IonHeader className="ion-no-border">
+                        <div className="flex items-center justify-between p-2">
+                            {/* Title */}
+                            <IonTitle>Menambah Keuangan</IonTitle>
+
+                            {/* Close Button */}
+                            <IonButton 
+                                color={"dark"} 
+                                fill="clear"
+                                onClick={() => this.cancelAdd()}>
+                                <IonIcon icon={closeOutline} />
+                            </IonButton>
+                        </div>
+                    </IonHeader>
+
+                    <IonContent>
+                        <IonList>
+                            {/* Email */}
+                            <IonItem className="flex justify-between items-center">
+                                {/* Icon */}
+                                <div className='px-2'>
+                                    <IonIcon icon={cashOutline}></IonIcon>
+                                </div>
+
+                                {/* Input */}
+                                <IonInput 
+                                    type="number" 
+                                    value={this.state.sizeInput} 
+                                    placeholder="Besaran Uang yang Akan di Masukkan"
+                                    min={0}
+                                    onIonChange={(event) => this.setState({sizeInput: parseInt(event.detail.value!) })}
+                                    onIonBlur={() => {
+                                        // Get element
+                                        const element: HTMLElement = document.getElementById("input_email_alert")!;
+                                        
+                                        // Check is NaN
+                                        if(isNaN(this.state.sizeInput))
+                                            this.setState({
+                                                sizeInput: 1
+                                            });
+
+                                        // Check if email is empty
+                                        if(this.state.sizeInput <= 0)
+                                            element.style.display = "block";
+                                        else
+                                            element.style.display = "none";
+                                    }}></IonInput>
+
+                                {/* Alert */}
+                                <div id="input_email_alert" className="hidden p-2">
+                                    <IonBadge color="danger">
+                                        <IonIcon icon={alertOutline}></IonIcon>
+                                    </IonBadge>
+                                </div>
+                            </IonItem>
+
+                            {/* Jenis Keuangan */}
+                            <IonItem>
+                                <IonLabel>Jenis Keuangan</IonLabel>
+                                <IonSelect 
+                                    interface="popover"
+                                    placeholder="Pilih Jenis Keuangan"
+                                    value={this.state.typeInput}
+                                    onIonChange={(event) => this.setState({typeInput: event.detail.value! })}>
+                                    <IonSelectOption value="income">Pemasukan</IonSelectOption>
+                                    <IonSelectOption value="expenditure">Pengeluaran</IonSelectOption>
+                                    <IonSelectOption value="owe">Meng Hutang</IonSelectOption>
+                                    <IonSelectOption value="owed">Di Hutang</IonSelectOption>
+                                </IonSelect>
+                            </IonItem>
+                        </IonList>
+
+                        {/* Add Button */}
+                        <IonFab vertical="bottom" horizontal="end" slot="fixed">
+                            <IonFabButton
+                                color="dark"
+                                onClick={() => {
+                                    // Get element
+                                    const element: HTMLElement = document.getElementById("progess_form")!;
+
+                                    // Show Progress
+                                    element.style.display = "block";
+
+                                    // Get data
+                                    const inputSize: number = this.state.sizeInput;
+                                    const inputType: string = this.state.typeInput;
+
+                                    // Make Target
+                                    let method: string = "money";
+                                    let type: string = "income";
+
+                                    // Check type
+                                    switch(inputType) {
+                                        case "expenditure":
+                                            type = "expenditure";
+                                            break;
+
+                                        case "owe":
+                                            method = "debt";
+                                            type = "owe";
+                                            break;
+                                        
+                                        case "owed":
+                                            method = "debt";
+                                            type = "owed";
+                                            break;
+                                    }
+
+                                    // Make url
+                                    let url: string = 
+                                        `${this.state.server}${method}/create/${localStorage.getItem("key_user")}/${type}/${inputSize}`;
+
+                                    // Fetch
+                                    fetch(url).then(data => data.json()).then((response: {
+                                        code: number,
+                                        response: boolean,
+                                        description: string
+                                    }) => {
+                                        // Set display none
+                                        element.style.display = "none";
+
+                                        // Hidden
+                                        this.cancelAdd();
+
+                                        // Run refresh
+                                        this.refreshData();
+                                    });
+                                }}>
+                                <IonIcon icon={add} />
+                            </IonFabButton>
+                        </IonFab>
+                    </IonContent>
+                </IonModal>
 
                 {/* Content */}
                 <div className="mt-16 relative">
@@ -214,134 +461,49 @@ class Main extends React.Component<{ server: String}, PropsMain> {
                         id="progess_fetch"
                         className="hidden absolute"></IonProgressBar>
 
+                    {/* List Card */}
                     <div className="flex flex-wrap md:flex-nowrap md:justify-between">
-                        <IonCard className="main_card_statistic">
-                            <IonCardHeader>
-                                <IonCardSubtitle>Pemasukan</IonCardSubtitle>
-                            </IonCardHeader>
-                            <IonCardContent className="flex items-center justify-between">
-                                <div className="flex items-center">
-                                    <IonIcon icon={arrowUpOutline} />
-                                    <p className="px-2">Rp {this.state.income}</p>
-                                </div>
+                        {/* Income */}
+                        <this.makeChartTop 
+                            color={"green"} 
+                            data={this.state.income} 
+                            title="Pemasukan"
+                            icon={arrowUpOutline} />
 
-                                <div style={{width: "40px", height: "40px"}}>
-                                    <Chart type={"doughnut"} data={{
-                                        labels: ["Pendapatan", "Total"],
-                                        datasets: [
-                                            {
-                                                label: "",
-                                                data: [this.state.income, this.getTotal()],
-                                                backgroundColor: ["green", "black"],
-                                            }
-                                        ]
-                                    }} options={{
-                                        maintainAspectRatio: false,
-                                        plugins: {
-                                            legend: {
-                                                display: false
-                                            }
-                                        }
-                                    }} />
-                                </div>
-                            </IonCardContent>
-                        </IonCard>
+                        {/* Expenditure */}
+                        <this.makeChartTop 
+                            color={"#f1f1f1"} 
+                            data={this.state.expenditure} 
+                            title="Pengeluaran"
+                            icon={arrowDownOutline} />
 
-                        <IonCard className="main_card_statistic">
-                            <IonCardHeader>
-                                <IonCardSubtitle>Pengeluaran</IonCardSubtitle>
-                            </IonCardHeader>
-                            <IonCardContent className="flex items-center justify-between">
-                                <div className="flex items-center">
-                                    <IonIcon icon={arrowDownOutline} />
-                                    <p className="px-2">Rp {this.state.expenditure}</p>
-                                </div>
+                        {/* Owe */}
+                        <this.makeChartTop 
+                            color={"yellow"} 
+                            data={this.state.owe} 
+                            title="Meng Hutang"
+                            icon={cardOutline} />
 
-                                <div style={{width: "40px", height: "40px"}}>
-                                    <Chart type={"doughnut"} data={{
-                                        labels: ["Pengeluaran", "Total"],
-                                        datasets: [
-                                            {
-                                                label: "",
-                                                data: [this.state.expenditure, this.getTotal()],
-                                                backgroundColor: ["#f1f1f1", "black"],
-                                            }
-                                        ]
-                                    }} options={{
-                                        maintainAspectRatio: false,
-                                        plugins: {
-                                            legend: {
-                                                display: false
-                                            }
-                                        }
-                                    }} />
-                                </div>
-                            </IonCardContent>
-                        </IonCard>
+                        {/* Owed */}
+                        <this.makeChartTop 
+                            color={"red"} 
+                            data={this.state.owed} 
+                            title="Di Hutang"
+                            icon={peopleCircleOutline} />
+                    </div>
 
-                        <IonCard className="main_card_statistic">
-                            <IonCardHeader>
-                                <IonCardSubtitle>Meng Hutang</IonCardSubtitle>
-                            </IonCardHeader>
-                            <IonCardContent className="flex items-center justify-between">
-                                <div className="flex items-center">
-                                    <IonIcon icon={cardOutline} />
-                                    <p className="px-2">Rp {this.state.owe}</p>
-                                </div>
-
-                                <div style={{width: "40px", height: "40px"}}>
-                                    <Chart type={"doughnut"} data={{
-                                        labels: [""],
-                                        datasets: [
-                                            {
-                                                label: "",
-                                                data: [this.state.owe, this.getTotal()],
-                                                backgroundColor: ["yellow", "black"],
-                                            }
-                                        ]
-                                    }} options={{
-                                        maintainAspectRatio: false,
-                                        plugins: {
-                                            legend: {
-                                                display: false
-                                            }
-                                        }
-                                    }} />
-                                </div>
-                            </IonCardContent>
-                        </IonCard>
-
-                        <IonCard className="main_card_statistic">
-                            <IonCardHeader>
-                                <IonCardSubtitle>Di Hutang</IonCardSubtitle>
-                            </IonCardHeader>
-                            <IonCardContent className="flex items-center justify-between">
-                                <div className="flex items-center">
-                                    <IonIcon icon={peopleCircleOutline} />
-                                    <p className="px-2">Rp {this.state.owed}</p>
-                                </div>
-
-                                <div style={{width: "40px", height: "40px"}}>
-                                    <Chart type={"doughnut"} data={{
-                                        labels: [""],
-                                        datasets: [
-                                            {
-                                                label: "",
-                                                data: [this.state.owed, this.getTotal()],
-                                                backgroundColor: ["red", "black"],
-                                            }
-                                        ]
-                                    }} options={{
-                                        maintainAspectRatio: false,
-                                        plugins: {
-                                            legend: {
-                                                display: false
-                                            }
-                                        }
-                                    }} />
-                                </div>
-                            </IonCardContent>
-                        </IonCard>
+                    {/* Total Money */}
+                    <div className="w-full mt-2 p-2">
+                        <div className="w-full md:w-1/2">
+                            <IonList>
+                                <this.makeList data={this.state.income} title="Pemasukan" />
+                                <this.makeList data={this.state.expenditure} title="Pengeluaran" />
+                                <this.makeList data={this.state.owe} title="Meng Hutan" />
+                                <this.makeList data={this.state.owed} title="Di Hutang" />
+                                <this.makeList data={this.state.income - 
+                                    (this.state.expenditure + this.state.owe + this.state.owed)} title="Jumlah" />
+                            </IonList>
+                        </div>
                     </div>
                 </div>
             </IonPage>

@@ -82,7 +82,7 @@ class App extends React.Component<{}, { hasLogin: boolean, server: string }> {
     };
 
     // Get element
-    const element_progres: HTMLElement = document.getElementById("progess_form")!;
+    const elementProgres: HTMLElement = document.getElementById("progess_form")!;
     
     // fetch
     try {
@@ -112,11 +112,11 @@ class App extends React.Component<{}, { hasLogin: boolean, server: string }> {
           }
 
           // Show element progress
-          element_progres.style.display = "none";
+          elementProgres.style.display = "none";
         });
     } catch(err) {
       // Hidden element progress
-      element_progres.style.display = "none";
+      elementProgres.style.display = "none";
     }
 
     // return response
@@ -133,7 +133,7 @@ class App extends React.Component<{}, { hasLogin: boolean, server: string }> {
     };
 
     // Get element
-    const element_progres: HTMLElement = document.getElementById("progess_form")!;
+    const elementProgres: HTMLElement = document.getElementById("progess_form")!;
 
     // fetch
     try {
@@ -180,20 +180,20 @@ class App extends React.Component<{}, { hasLogin: boolean, server: string }> {
                   }
         
                   // Show element progress
-                  element_progres.style.display = "none";
+                  elementProgres.style.display = "none";
                 });
             } catch(err) {
               // Hidden element progress
-              element_progres.style.display = "none";
+              elementProgres.style.display = "none";
             }
           }
 
           // Hidden element progress
-          element_progres.style.display = "none";
+          elementProgres.style.display = "none";
         });
     } catch(err) {
       // Hidden element progress
-      element_progres.style.display = "none";
+      elementProgres.style.display = "none";
     }
 
     // return response
@@ -214,6 +214,7 @@ class App extends React.Component<{}, { hasLogin: boolean, server: string }> {
     this.setHasLogin();
   }
 
+  /** @return {boolean} */
   getAccessMain(): boolean {
     return (this.state.hasLogin 
             && localStorage.getItem("email")    != null 
