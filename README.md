@@ -26,3 +26,9 @@ Dan platform yang disuport adalah berikut:
   - ReactJS
   - Ionic
   - Android Studio
+
+# Gambar Untuk Web, Windows
+![Desktop](https://github.com/jonathanmarp/keuanganku/blob/main/sample1.png)
+
+# Gambar Android
+![Android](https://github.com/jonathanmarp/keuanganku/blob/main/sample2.png)
