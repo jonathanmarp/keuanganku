@@ -77,11 +77,17 @@ function Navbar(props: { GetAccessMain: Function, LogOut: Function }) {
 
                                     {/* List */}
                                     <div className='mt-2'>
-                                        {/* Pemasukan */}
-                                        <button className="button-menu p-2">
+                                        {/* Main */}
+                                        <IonButton fill="clear" href="/Main" className="button-menu p-2">
+                                            <IonIcon icon={globeOutline} />
+                                            <h1 className="font-semibold px-2">Main</h1>
+                                        </IonButton>
+
+                                        {/* History */}
+                                        <IonButton fill="clear" href="/history" className="button-menu p-2">
                                             <IonIcon icon={globeOutline} />
                                             <h1 className="font-semibold px-2">History</h1>
-                                        </button>
+                                        </IonButton>
                                     </div>
                                 </div>
                             </IonContent>

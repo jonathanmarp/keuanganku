@@ -7,10 +7,6 @@ import {
     IonFab,
     IonFabButton,
     IonIcon,
-    IonCard,
-    IonCardContent,
-    IonCardHeader,
-    IonCardSubtitle,
     IonProgressBar,
     IonRefresher,
     IonRefresherContent,
@@ -26,6 +22,9 @@ import {
     IonSelect,
     IonSelectOption,
     IonBadge,
+    IonGrid,
+    IonRow,
+    IonCol,
 } from '@ionic/react';
 
 // Import core from ionic
@@ -34,27 +33,14 @@ import { RefresherEventDetail } from '@ionic/core';
 // Icons
 import {
     add, 
-    alertOutline, 
-    arrowDownOutline, 
-    arrowUpOutline, 
-    cardOutline, 
+    alertOutline,
     cashOutline, 
-    closeOutline, 
-    peopleCircleOutline,
+    closeOutline,
+    ellipsisHorizontalCircleOutline
 } from 'ionicons/icons';
 
 // Import Style
 import "./Main.css";
-
-// Import Char.js
-import {
-    Chart as ChartJS,
-    registerables
-} from 'chart.js';
-
-import { Chart } from 'react-chartjs-2';
-
-ChartJS.register (...registerables);
 
 /** @interface */
 interface PropsMainData {
@@ -86,7 +72,7 @@ interface PropsMain {
     typeInput: string
 }
 
-class Main extends React.Component<{ server: String}, PropsMain> {
+class History extends React.Component<{ server: String}, PropsMain> {
     constructor(props: any) {
         super(props);
 
@@ -112,8 +98,6 @@ class Main extends React.Component<{ server: String}, PropsMain> {
         this.getTotal = this.getTotal.bind(this);
         this.refreshPage = this.refreshPage.bind(this);
         this.refreshData = this.refreshData.bind(this);
-        this.makeChartTop = this.makeChartTop.bind(this);
-        this.makeList = this.makeList.bind(this);
         this.cancelAdd = this.cancelAdd.bind(this);
     }
 
@@ -224,67 +208,6 @@ class Main extends React.Component<{ server: String}, PropsMain> {
     getTotal(): number {
         const state = this.state;
         return state.income + state.expenditure + state.owe + state.owed;
-    }
-
-    makeChartTop(props: {
-        data: number,
-        color: string,
-        title: string,
-        icon: string
-    }): any {
-        return (
-            <IonCard className="main_card_statistic">
-                <IonCardHeader>
-                    <IonCardSubtitle>{props.title}</IonCardSubtitle>
-                </IonCardHeader>
-                <IonCardContent className="flex items-center justify-between">
-                    <div className="flex items-center">
-                        <IonIcon icon={props.icon} />
-                        <p className="px-2 text-sm">{this.state.formmatter.format(props.data)}</p>
-                    </div>
-                    
-                    <div className="hidden md:block" style={{width: "40px", height: "40px"}}>
-                        <Chart type={"doughnut"} data={{
-                            labels: ["", ""],
-                            datasets: [
-                                {
-                                    label: "",
-                                    data: [props.data, this.getTotal()],
-                                    backgroundColor: [props.color, "#191A19"],
-                                }
-                            ]
-                        }} options={{
-                            maintainAspectRatio: false,
-                            plugins: {
-                                legend: {
-                                    display: false
-                                }
-                            }
-                        }} />
-                    </div>
-                </IonCardContent>
-            </IonCard>
-        );
-    }
-
-    makeList(props: {
-        title: string,
-        data: number
-        makeCurrency: boolean
-    }): any {
-        let dataWillShow: any = props.data;
-
-        if(props.makeCurrency)
-            dataWillShow = this.state.formmatter.format(dataWillShow);
-        else
-            dataWillShow = Math.floor(props.data / this.getTotal() * 100);
-
-        return (
-            <IonItem>
-                <IonLabel>{props.title}</IonLabel>
-                <p>{dataWillShow}{props.makeCurrency ? "" : "%"}</p>
-            </IonItem>
-        );
     }
 
     cancelAdd(): void {
@@ -469,65 +392,59 @@ class Main extends React.Component<{ server: String}, PropsMain> {
                         id="progess_fetch"
                         className="hidden absolute"></IonProgressBar>
 
-                    {/* List Card */}
-                    <div className="flex flex-wrap md:flex-nowrap md:justify-between">
-                        {/* Income */}
-                        <this.makeChartTop 
-                            color={"green"} 
-                            data={this.state.income} 
-                            title="Pemasukan"
-                            icon={arrowUpOutline} />
+                        <div className="w-full h-full">
+                            <IonItem>
+                                <IonGrid className="text-xs md:text-base">
+                                    {/* Header */}
+                                    <IonRow>
+                                        <IonCol size="1">
+                                            <IonLabel>Id</IonLabel>
+                                        </IonCol>
+                                        <IonCol size="3">
+                                            <p>Jenis Keuangan</p>
+                                        </IonCol>
+                                        <IonCol size="4">
+                                            <p>Jumlah Uang</p>
+                                        </IonCol>
+                                        
+                                        <IonCol size="2">
+                                            <p>More</p>
+                                        </IonCol>
+                                    </IonRow>
 
-                        {/* Expenditure */}
-                        <this.makeChartTop 
-                            color={"#f1f1f1"} 
-                            data={this.state.expenditure} 
-                            title="Pengeluaran"
-                            icon={arrowDownOutline} />
+                                    {/* Content  */}
+                                    {
+                                        this.state.datas_money.map((item: PropsMainData, id: number): any => {
+                                            return (
+                                                <IonRow key={id}>
+                                                    <IonCol size="1">
+                                                        <IonLabel>{item.id}</IonLabel>
+                                                    </IonCol>
 
-                        {/* Owe */}
-                        <this.makeChartTop 
-                            color={"yellow"} 
-                            data={this.state.owe} 
-                            title="Meng Hutang"
-                            icon={cardOutline} />
+                                                    <IonCol size="3">
+                                                        <p>{(item.type === "income") ? "Pemasukkan" : "Pengeluaran"}</p>
+                                                    </IonCol>
 
-                        {/* Owed */}
-                        <this.makeChartTop 
-                            color={"red"} 
-                            data={this.state.owed} 
-                            title="Di Hutang"
-                            icon={peopleCircleOutline} />
-                    </div>
+                                                    <IonCol size="4">
+                                                        <p>{this.state.formmatter.format(item.size)}</p>
+                                                    </IonCol>
 
-                    {/* Total Money */}
-                    <div className="w-full mt-2 p-2 md:flex md:justify-between">
-                        <div className="w-full md:w-[49%] py-1">
-                            <IonList>
-                                <this.makeList makeCurrency={true} data={this.state.income} title="Pemasukan" />
-                                <this.makeList makeCurrency={true} data={this.state.expenditure} title="Pengeluaran" />
-                                <this.makeList makeCurrency={true} data={this.state.owe} title="Meng Hutan" />
-                                <this.makeList makeCurrency={true} data={this.state.owed} title="Di Hutang" />
-                                <this.makeList makeCurrency={true} data={this.state.income - 
-                                    (this.state.expenditure + this.state.owe + this.state.owed)} title="Jumlah" />
-                            </IonList>
+                                                    <IonCol size="2">
+                                                        <IonButton>
+                                                            <IonIcon icon={ellipsisHorizontalCircleOutline} />
+                                                        </IonButton>
+                                                    </IonCol>
+                                                </IonRow>
+                                            )
+                                        })
+                                    }
+                                </IonGrid>
+                            </IonItem>
                         </div>
-
-                        <div className="w-full md:w-[49%] py-1">
-                            <IonList>
-                                <this.makeList makeCurrency={false} data={this.state.income} title="Pemasukan" />
-                                <this.makeList makeCurrency={false} data={this.state.expenditure} title="Pengeluaran" />
-                                <this.makeList makeCurrency={false} data={this.state.owe} title="Meng Hutan" />
-                                <this.makeList makeCurrency={false} data={this.state.owed} title="Di Hutang" />
-                                <this.makeList makeCurrency={false} data={this.state.income - 
-                                    (this.state.expenditure + this.state.owe + this.state.owed)} title="Jumlah" />
-                            </IonList>
-                        </div>
-                    </div>
                 </div>
             </IonPage>
         );
     }
 }
 
-export default Main;
+export default History;

@@ -9,6 +9,7 @@ import React from "react";
 import Login from './pages/Login';
 import Main from './pages/Main';
 import Register from './pages/Register';
+import History from './pages/History';
 
 // Import components
 import Navbar from './components/Navbar';
@@ -246,6 +247,11 @@ class App extends React.Component<{}, { hasLogin: boolean, server: string }> {
             {/* Main */}
             <Route exact path="/main" render={() => {
               return this.getAccessMain() ? <Main server={this.state.server} /> : <Redirect to="/login" />;
+            }}></Route>
+
+            {/* Main */}
+            <Route exact path="/history" render={() => {
+              return this.getAccessMain() ? <History server={this.state.server} /> : <Redirect to="/login" />;
             }}></Route>
 
             <Route exact path="/">
