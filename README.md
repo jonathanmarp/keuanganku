@@ -8,7 +8,7 @@ Dan platform yang disuport adalah berikut:
 <tr />  2. Windows (Coming Soon) <br />
 <tr />  3. Web (Coming Soon) <br />
 
-<br/><br/><br/>
+---
 
 ## Yang Dikembangkan di Git Ini
 - Branch: **Development-v1**. Untuk pengembangan server
