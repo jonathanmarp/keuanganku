@@ -17,3 +17,4 @@ dan berbagai data keuangan. Dan ini git ini digunakan untuk server yang berbasis
   - NPM
   - ReactJS
   - Ionic
+  - Android Studio
