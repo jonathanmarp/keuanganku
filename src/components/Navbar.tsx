@@ -16,7 +16,6 @@ import {
 import {
     peopleOutline,
     logOutOutline,
-    settingsOutline,
     listOutline,
     globeOutline
 } from 'ionicons/icons';
@@ -51,12 +50,6 @@ function Navbar(props: { GetAccessMain: Function, LogOut: Function }) {
 
                                     {/* List */}
                                     <div className='mt-2'>
-                                        {/* Settings */}
-                                        <button className="button-menu p-2">
-                                            <IonIcon icon={settingsOutline} />
-                                            <h1 className="font-semibold px-2">Pengaturan</h1>
-                                        </button>
-                                        
                                         {/* Sign Out */}
                                         <button 
                                             className="button-menu p-2"

@@ -63,6 +63,8 @@ interface PropsMainData {
     size: number
     create: Number,
     update: Number,
+    paid: boolean,
+    has_paid: number
 }
 
 /** @interface */
@@ -201,14 +203,16 @@ class Main extends React.Component<{ server: String}, PropsMain> {
             let owed = 0;
 
             this.state.datas_debt.map((data: PropsMainData) => {
-                switch(data.type) {
-                    case "owe":
-                        owe += data.size;
-                        break;
-
-                    case "owed":
-                        owed += data.size;
-                        break;
+                if(parseInt(String(data.paid)) === 0) {
+                    switch(data.type) {
+                        case "owe":
+                            owe += data.size;
+                            break;
+    
+                        case "owed":
+                            owed += data.size;
+                            break;
+                    }
                 }
 
                 return 1;

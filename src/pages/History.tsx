@@ -25,6 +25,7 @@ import {
     IonGrid,
     IonRow,
     IonCol,
+    IonDatetime,
 } from '@ionic/react';
 
 // Import core from ionic
@@ -44,11 +45,13 @@ import "./Main.css";
 
 /** @interface */
 interface PropsMainData {
-    id: Number,
+    id: number,
     type: string,
     size: number
     create: Number,
     update: Number,
+    paid: boolean,
+    has_paid: number
 }
 
 /** @interface */
@@ -68,8 +71,15 @@ interface PropsMain {
     owed: number,
     total: number,
     canModalOpen: boolean,
+    canModalOpenMore: boolean,
     sizeInput: number,
-    typeInput: string
+    typeInput: string,
+    dateModalMore: Date,
+    idModalMore: number,
+    sizeModalMore: number,
+    typeModalMoreDebt: boolean,
+    hasPaidModalMoreDebt: Date,
+    paidModalMoreDebt: boolean,
 }
 
 class History extends React.Component<{ server: String}, PropsMain> {
@@ -90,8 +100,15 @@ class History extends React.Component<{ server: String}, PropsMain> {
             owed: 0,
             total: 0,
             canModalOpen: false,
+            canModalOpenMore: false,
             sizeInput: 0,
-            typeInput: "income"
+            typeInput: "income",
+            dateModalMore: new Date(),
+            idModalMore: 0,
+            sizeModalMore: 0,
+            typeModalMoreDebt: false,
+            hasPaidModalMoreDebt: new Date(),
+            paidModalMoreDebt: false,
         };
 
         this.FetchMoney = this.FetchMoney.bind(this);
@@ -99,6 +116,7 @@ class History extends React.Component<{ server: String}, PropsMain> {
         this.refreshPage = this.refreshPage.bind(this);
         this.refreshData = this.refreshData.bind(this);
         this.cancelAdd = this.cancelAdd.bind(this);
+        this.cancelMore = this.cancelMore.bind(this);
     }
 
     // Fetch Data From Server
@@ -213,8 +231,15 @@ class History extends React.Component<{ server: String}, PropsMain> {
     cancelAdd(): void {
         this.setState({
             canModalOpen: false,
+            canModalOpenMore: false,
             sizeInput: 0,
             typeInput: "income"
+        });
+    }
+
+    cancelMore(): void {
+        this.setState({
+            canModalOpenMore: false
         });
     }
 
@@ -236,6 +261,210 @@ class History extends React.Component<{ server: String}, PropsMain> {
                         <IonRefresherContent></IonRefresherContent>
                     </IonRefresher>
                 </IonContent>
+
+                {/* More */}
+                <IonModal
+                    isOpen={this.state.canModalOpenMore}>
+                    {/* Progeress */}
+                    <IonProgressBar 
+                            type="indeterminate" 
+                            color="dark"
+                            id="progess_edit"
+                            className="hidden"></IonProgressBar>
+
+                    {/* Header */}
+                    <IonHeader className="ion-no-border">
+                        <div className="flex items-center justify-between p-2">
+                            {/* Title */}
+                            <IonTitle>Mengubah {this.state.typeModalMoreDebt ? "Utang" : "Keuangan"}</IonTitle>
+
+                            {/* Close Button */}
+                            <IonButton 
+                                color={"dark"} 
+                                fill="clear"
+                                onClick={() => this.cancelMore()}>
+                                <IonIcon icon={closeOutline} />
+                            </IonButton>
+                        </div>
+                    </IonHeader>
+
+                    <IonContent>
+                        <IonList>
+                            <IonLabel className="flex justify-center">Dibuat Tanggal</IonLabel>
+                            <div className="w-full flex justify-center">
+                                {((): any => {
+                                    const date: Date = this.state.dateModalMore;
+                                    const month: string = String(date.getMonth() + 1);
+                                    const day: string = String(date.getDate());
+                                    const hours: string = String(date.getHours());
+                                    const minutes: string = String(date.getMinutes());
+                                    let time: string = `${date.getFullYear()}-${month.length === 1 ? "0" : ""}${month}-${day.length === 1 ? "0" : ""}${day}T`;
+                                    time += `${hours.length === 1 ? "0" : ""}${hours}:${minutes.length === 1 ? "0" : ""}${minutes}`;
+
+                                    return <IonDatetime value={time} readonly></IonDatetime>;
+                                })()}
+                            </div>
+                        </IonList>
+
+                        <IonList className="mt-4">
+                            <IonLabel className="flex justify-center">Edit {this.state.typeModalMoreDebt ? "Utang" : "Keuangan"}</IonLabel>
+
+                            {/* Add Money */}
+                            <IonItem className="flex justify-between items-center">
+                                {/* Icon */}
+                                <div className='px-2'>
+                                    <IonIcon icon={cashOutline}></IonIcon>
+                                </div>
+
+                                {/* Input */}
+                                <IonInput 
+                                    type="number" 
+                                    value={this.state.sizeModalMore} 
+                                    placeholder="Besaran Uang yang Akan di Masukkan"
+                                    min={0}
+                                    onIonChange={(event) => this.setState({sizeModalMore: parseInt(event.detail.value!) })}
+                                    onIonBlur={() => {
+                                        // Get element
+                                        const element: HTMLElement = document.getElementById("input_email_alert")!;
+                                        
+                                        // Check is NaN
+                                        if(isNaN(this.state.sizeModalMore))
+                                            this.setState({
+                                                sizeModalMore: 1
+                                            });
+
+                                        // Check if email is empty
+                                        if(this.state.sizeModalMore <= 0)
+                                            element.style.display = "block";
+                                        else
+                                            element.style.display = "none";
+                                    }}></IonInput>
+
+                                {/* Alert */}
+                                <div id="input_email_alert" className="hidden p-2">
+                                    <IonBadge color="danger">
+                                        <IonIcon icon={alertOutline}></IonIcon>
+                                    </IonBadge>
+                                </div>
+                            </IonItem>
+                        </IonList>
+
+                        {
+                            this.state.typeModalMoreDebt ? (
+                                <div className="flex w-full">
+                                    <IonButton 
+                                        expand="block" 
+                                        className="w-1/2" 
+                                        color={this.state.paidModalMoreDebt ? "success" : "danger" }>
+                                        Has Paid: {this.state.paidModalMoreDebt ? "true" : "false"}
+                                    </IonButton>
+
+                                    {
+                                        this.state.paidModalMoreDebt ? "" : (
+                                            <IonButton
+                                                expand="block" 
+                                                className="w-1/2" 
+                                                color="warning" 
+                                                onClick={() => {
+                                                    const urlTarget = `${this.state.server}debt/paid/${localStorage.getItem("key_user")}/${this.state.idModalMore}`;
+
+                                                    // Get element
+                                                    const element: HTMLElement = document.getElementById("progess_edit")!;
+
+                                                    // Show Progress
+                                                    element.style.display = "block";
+
+                                                    // Fetch
+                                                    fetch(urlTarget).then(data => data.json()).then((response: {
+                                                        code: number,
+                                                        response: boolean,
+                                                        description: string
+                                                    }) => {
+                                                        // Set display none
+                                                        element.style.display = "none";
+
+                                                        // Hidden
+                                                        this.cancelAdd();
+
+                                                        // Run refresh
+                                                        this.refreshData();
+                                                    });
+                                                }}>
+                                                Paid
+                                            </IonButton>
+                                        )
+                                    }
+                                </div>
+                            ) : ""
+                        }
+
+                        <div className="flex w-full">
+                            <IonButton 
+                                expand="block" 
+                                className="w-1/2" 
+                                color="light"
+                                onClick={() => {
+                                    const urlTarget = `${this.state.server}${this.state.typeModalMoreDebt ? "debt" : "money"}/update/${localStorage.getItem("key_user")}/${this.state.idModalMore}/${this.state.sizeModalMore}`;
+
+                                    // Get element
+                                    const element: HTMLElement = document.getElementById("progess_edit")!;
+
+                                    // Show Progress
+                                    element.style.display = "block";
+
+                                    // Fetch
+                                    fetch(urlTarget).then(data => data.json()).then((response: {
+                                        code: number,
+                                        response: boolean,
+                                        description: string
+                                    }) => {
+                                        // Set display none
+                                        element.style.display = "none";
+
+                                        // Hidden
+                                        this.cancelAdd();
+
+                                        // Run refresh
+                                        this.refreshData();
+                                    });
+                                }}>
+                                Edit
+                            </IonButton>
+
+                            <IonButton 
+                                expand="block" 
+                                className="w-1/2" 
+                                color="medium"
+                                onClick={() => {
+                                    const urlTarget = `${this.state.server}${this.state.typeModalMoreDebt ? "debt" : "money"}/delete/${localStorage.getItem("key_user")}/${this.state.idModalMore}`;
+
+                                    // Get element
+                                    const element: HTMLElement = document.getElementById("progess_edit")!;
+
+                                    // Show Progress
+                                    element.style.display = "block";
+
+                                    // Fetch
+                                    fetch(urlTarget).then(data => data.json()).then((response: {
+                                        code: number,
+                                        response: boolean,
+                                        description: string
+                                    }) => {
+                                        // Set display none
+                                        element.style.display = "none";
+
+                                        // Hidden
+                                        this.cancelAdd();
+
+                                        // Run refresh
+                                        this.refreshData();
+                                    });
+                                }}>
+                                Delete
+                            </IonButton>
+                        </div>
+                    </IonContent>
+                </IonModal>
 
                 {/* Modal */}
                 <IonModal 
@@ -266,7 +495,7 @@ class History extends React.Component<{ server: String}, PropsMain> {
 
                     <IonContent>
                         <IonList>
-                            {/* Email */}
+                            {/* Add Money */}
                             <IonItem className="flex justify-between items-center">
                                 {/* Icon */}
                                 <div className='px-2'>
@@ -430,7 +659,71 @@ class History extends React.Component<{ server: String}, PropsMain> {
                                                     </IonCol>
 
                                                     <IonCol size="2">
-                                                        <IonButton>
+                                                        <IonButton
+                                                            onClick={() => this.setState({ 
+                                                                canModalOpenMore: true,
+                                                                dateModalMore: new Date(Number(item.create)),
+                                                                sizeModalMore: item.size,
+                                                                idModalMore: item.id,
+                                                                typeModalMoreDebt: false
+                                                            })}>
+                                                            <IonIcon icon={ellipsisHorizontalCircleOutline} />
+                                                        </IonButton>
+                                                    </IonCol>
+                                                </IonRow>
+                                            )
+                                        })
+                                    }
+                                </IonGrid>
+                            </IonItem>
+
+                            <IonItem>
+                                <IonGrid className="text-xs md:text-base">
+                                    {/* Header */}
+                                    <IonRow>
+                                        <IonCol size="1">
+                                            <IonLabel>Id</IonLabel>
+                                        </IonCol>
+                                        <IonCol size="3">
+                                            <p>Jenis Utang</p>
+                                        </IonCol>
+                                        <IonCol size="4">
+                                            <p>Jumlah Utang</p>
+                                        </IonCol>
+                                        
+                                        <IonCol size="2">
+                                            <p>More</p>
+                                        </IonCol>
+                                    </IonRow>
+
+                                    {/* Content  */}
+                                    {
+                                        this.state.datas_debt.map((item: PropsMainData, id: number): any => {
+                                            return (
+                                                <IonRow key={id}>
+                                                    <IonCol size="1">
+                                                        <IonLabel>{item.id}</IonLabel>
+                                                    </IonCol>
+
+                                                    <IonCol size="3">
+                                                        <p>{(item.type === "owe") ? "Meng Hutang" : "Di Hutang"}</p>
+                                                    </IonCol>
+
+                                                    <IonCol size="4">
+                                                        <p>{this.state.formmatter.format(item.size)}</p>
+                                                    </IonCol>
+
+                                                    <IonCol size="2">
+                                                        <IonButton
+                                                            onClick={() => this.setState({ 
+                                                                canModalOpenMore: true,
+                                                                dateModalMore: new Date(Number(item.create)),
+                                                                sizeModalMore: item.size,
+                                                                idModalMore: item.id,
+                                                                typeModalMoreDebt: true,
+                                                                hasPaidModalMoreDebt: new Date(Number(item.has_paid)),
+                                                                paidModalMoreDebt: item.paid,
+                                                            })}>
                                                             <IonIcon icon={ellipsisHorizontalCircleOutline} />
                                                         </IonButton>
                                                     </IonCol>
